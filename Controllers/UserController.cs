@@ -8,23 +8,29 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace alderaan_shop.Controllers;
 
+/// Contrôleur REST pour la gestion des utilisateurs (inscription, connexion).
+/// Route de base: api/User
 [ApiController]
 [Route("api/[controller]")]
 public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
     private readonly ILogger<UserController> _logger;
-
-
-
-    //Constructor to initialize the user service via dependency injection.
+    
+    /// Constructeur avec injection du service utilisateur et du logger.
     public UserController(IUserService userService, ILogger<UserController> logger)
     {
         _userService = userService;
         _logger = logger;
 
     }
-
+    
+    /// Inscrit un nouvel utilisateur.
+    /// <param name="newUserDto">Données d'inscription utilisateur.</param>
+    /// <returns>200 OK si succès, 409 si conflit (existe déjà), 500 sinon.</returns>
+    /// <response code="200">Compte créé.</response>
+    /// <response code="409">Conflit: utilisateur déjà existant.</response>
+    /// <response code="500">Erreur interne.</response>
     [HttpPost("signup")]
     public async Task<IActionResult> SignUp([FromBody] NewUserDTO newUserDto)
     {
@@ -52,13 +58,19 @@ public class UserController : ControllerBase
             return StatusCode(500, "An error occurred. Please try again later.");
         }
     }
-
+    
+    /// Authentifie un utilisateur via email et mot de passe.
+    /// <param name="loginDto">Identifiants de connexion.</param>
+    /// <returns>200 OK si succès (avec projection ClientSidedUser), 401 si identifiants invalides, 409/500 sinon.</returns>
+    /// <response code="200">Connexion réussie.</response>
+    /// <response code="401">Identifiants invalides.</response>
+    /// <response code="409">Erreur côté serveur.</response>
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginDTO loginDto)
     {
         try
         {
-            //Init of MailMemoryChar and PasswordMemoryChar 
+            // Initialisation de MailMemoryChar et PasswordMemoryChar
             loginDto.InitializeMemoryChar();
             (string userId, ClientSidedUser user) = await _userService.LoginAsync(loginDto);
 
@@ -76,23 +88,23 @@ public class UserController : ControllerBase
         }
         catch (WrongCredentialsException ex)
         {
-            // Log server side
-            _logger.LogWarning($"Login failed for email: {loginDto.Mail}. Reason: {ex.Message}");
+            // Log côté serveur
+            _logger.LogWarning($"Échec de connexion pour l'email : {loginDto.Mail}. Raison : {ex.Message}");
 
-            _logger.LogInformation("Computed HMAC: " + Encryption.ComputeUniqueHmac(loginDto.MailMemoryChar));
-            _logger.LogInformation("PasswordMemoryChar length: " + loginDto.PasswordMemoryChar.Length);
+            _logger.LogInformation("HMAC calculé : " + Encryption.ComputeUniqueHmac(loginDto.MailMemoryChar));
+            _logger.LogInformation("Longueur de PasswordMemoryChar : " + loginDto.PasswordMemoryChar.Length);
 
-            // Log client side
+            // Log côté client
             return Unauthorized("Login failed. Please check your credentials.");
         }
         catch (Exception ex)
         {
-            // Log complete
-            _logger.LogError(ex, "Unexpected error during login.");
+            // Log complet
+            _logger.LogError(ex, "Erreur inattendue lors de la connexion.");
 
-            Console.WriteLine("Login HMAC mail: " + Encryption.ComputeUniqueHmac(loginDto.MailMemoryChar));
+            Console.WriteLine("HMAC du mail lors du login : " + Encryption.ComputeUniqueHmac(loginDto.MailMemoryChar));
             
-            // Log client side
+            // Log côté client
             return Conflict("An error occurred. Please try again later.");
         }
     }

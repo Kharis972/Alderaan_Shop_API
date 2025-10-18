@@ -2,7 +2,6 @@ C:\Users\khari\Documents\alderaan_shop\bin\Debug\net9.0\appsettings.Development.
 C:\Users\khari\Documents\alderaan_shop\bin\Debug\net9.0\appsettings.json
 C:\Users\khari\Documents\alderaan_shop\bin\Debug\net9.0\alderaan_shop.staticwebassets.runtime.json
 C:\Users\khari\Documents\alderaan_shop\bin\Debug\net9.0\alderaan_shop.staticwebassets.endpoints.json
-C:\Users\khari\Documents\alderaan_shop\bin\Debug\net9.0\alderaan_shop.exe
 C:\Users\khari\Documents\alderaan_shop\bin\Debug\net9.0\alderaan_shop.deps.json
 C:\Users\khari\Documents\alderaan_shop\bin\Debug\net9.0\alderaan_shop.runtimeconfig.json
 C:\Users\khari\Documents\alderaan_shop\bin\Debug\net9.0\alderaan_shop.dll
@@ -204,3 +203,4 @@ C:\Users\khari\Documents\alderaan_shop\obj\Debug\net9.0\refint\alderaan_shop.dll
 C:\Users\khari\Documents\alderaan_shop\obj\Debug\net9.0\alderaan_shop.pdb
 C:\Users\khari\Documents\alderaan_shop\obj\Debug\net9.0\alderaan_shop.genruntimeconfig.cache
 C:\Users\khari\Documents\alderaan_shop\obj\Debug\net9.0\ref\alderaan_shop.dll
+C:\Users\khari\Documents\alderaan_shop\obj\Debug\net9.0\alderaan_shop.sourcelink.json

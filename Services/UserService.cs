@@ -8,24 +8,42 @@ using alderaan_shop.Services.Interfaces;
 
 namespace alderaan_shop.Services;
 
+/// <summary>
+/// Service utilisateur.
+/// Centralise la logique métier liée au cycle de vie des utilisateurs (inscription, authentification),
+/// y compris la préparation/chiffrement des données sensibles et l'indexation HMAC.
+/// </summary>
 public class UserService : Service<User>, IUserService
 {
     private readonly IUserRepository _userRepository;
     
+    /// <summary>
+    /// Initialise une nouvelle instance de <see cref="UserService"/>.
+    /// </summary>
+    /// <param name="userRepository">Repository utilisateur pour l'accès aux données.</param>
+    /// <param name="logger">Logger typé.</param>
     public UserService(IUserRepository userRepository, ILogger<UserService> logger) : base(userRepository, logger)
     {
         _userRepository = userRepository;
         Logger = logger;
     }
 
+    /// <summary>
+    /// Inscrit un nouvel utilisateur après validations, chiffrement des PII et génération d'index HMAC.
+    /// </summary>
+    /// <param name="newUserDto">Données d'inscription (avec buffers Memory&lt;char&gt; initialisés).</param>
+    /// <returns>Tâche asynchrone complétée si succès.</returns>
+    /// <exception cref="UserAlreadyExistsException">Un utilisateur existe déjà avec l'email ou le téléphone fournis.</exception>
+    /// <exception cref="DatabaseException">Erreur lors de la persistance en base.</exception>
+    /// <exception cref="InternalServerException">Erreur interne inattendue.</exception>
     public async Task SignupAsync(NewUserDTO newUserDto)
     {
         try
         {
             //Boolean that checks whether a user exists based on their email and phone number.
             if (await _userRepository.CheckForUserByUniqueIndexesAsync(
-                    Encryption.ComputeUniqueHmac(newUserDto.MailMemoryChar).ToString(),
-                    Encryption.ComputeUniqueHmac(newUserDto.PhoneNumberMemoryChar).ToString()))
+                    Encryption.ComputeUniqueHmac(newUserDto.PhoneNumberMemoryChar).ToString(),
+                    Encryption.ComputeUniqueHmac(newUserDto.MailMemoryChar).ToString()))
                 throw new UserAlreadyExistsException("A user with this information is already registered.");
             Guid id = Guid.NewGuid();
             //As long as the ID exists in the database, it will keep generating a new one; otherwise, it stops.
@@ -71,6 +89,13 @@ public class UserService : Service<User>, IUserService
         }
     }
 
+    /// <summary>
+    /// Authentifie un utilisateur à partir de son email et mot de passe.
+    /// </summary>
+    /// <param name="loginDto">Identifiants de connexion (buffers Memory&lt;char&gt; initialisés).</param>
+    /// <returns>Un tuple (UserId, ClientSidedUser) si authentification réussie.</returns>
+    /// <exception cref="WrongCredentialsException">Identifiants invalides.</exception>
+    /// <exception cref="InternalServerException">Erreur interne lors du processus d'authentification.</exception>
     public async Task<(string, ClientSidedUser)> LoginAsync(LoginDTO loginDto)
     {
         try

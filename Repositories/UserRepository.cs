@@ -6,12 +6,20 @@ using Microsoft.EntityFrameworkCore;
 namespace alderaan_shop.Repositories;
 
 // Définition de la classe UserRepository qui hérite de Repository<User> et implémente IUserRepository
+/// <summary>
+/// Repository concret pour l'entité User.
+/// Fournit des requêtes ciblées autour de l'authentification, de la recherche par HMAC et des rôles.
+/// </summary>
 public class UserRepository(ApplicationDatabaseContext dbContext, ILogger<Repository<User>> logger)
     : Repository<User>(dbContext, logger), IUserRepository
 {
-    // Méthode pour récupérer un utilisateur par son adresse mail (HMAC)
-   public async Task<User?> GetUserByMailHmacAsync(string userMail)
-       {
+    /// <summary>
+    /// Récupère un utilisateur par l'HMAC de son email.
+    /// </summary>
+    /// <param name="userMail">HMAC unique de l'adresse email.</param>
+    /// <returns>Utilisateur correspondant ou null si introuvable.</returns>
+    public async Task<User?> GetUserByMailHmacAsync(string userMail)
+    {
            try
            {
                // Recherche du premier utilisateur dont le champ Mail correspond à userMail
@@ -25,7 +33,12 @@ public class UserRepository(ApplicationDatabaseContext dbContext, ILogger<Reposi
            }
        } 
 
-    // Méthode pour récupérer une liste paginée d'utilisateurs selon leur rôle (admin ou non)
+    /// <summary>
+    /// Retourne une liste paginée d'utilisateurs filtrés par rôle administrateur.
+    /// </summary>
+    /// <param name="isAdmin">True pour administrateurs, false pour utilisateurs standards.</param>
+    /// <param name="index">Index de page (0-based).</param>
+    /// <param name="entityNumber">Taille de page.</param>
     public async Task<IEnumerable<User>> GetUsersByRoleWithPagingAsync(bool isAdmin, int index, int entityNumber)
     {
         try
@@ -45,7 +58,12 @@ public class UserRepository(ApplicationDatabaseContext dbContext, ILogger<Reposi
         }
     }
 
-    // Méthode pour vérifier si un utilisateur existe via ses index uniques (HMAC du téléphone ou du mail)
+    /// <summary>
+    /// Vérifie si un utilisateur existe via ses index uniques (HMAC du téléphone ou de l'email).
+    /// </summary>
+    /// <param name="phoneNumberUniqueHmac">HMAC unique du numéro de téléphone.</param>
+    /// <param name="mailUniqueHmac">HMAC unique de l'adresse email.</param>
+    /// <returns>True si un utilisateur existe avec l'un des deux HMAC, sinon false.</returns>
     public async Task<bool> CheckForUserByUniqueIndexesAsync(string phoneNumberUniqueHmac, string mailUniqueHmac)
     {
         try
@@ -62,7 +80,11 @@ public class UserRepository(ApplicationDatabaseContext dbContext, ILogger<Reposi
         }
     }
 
-    // Méthode pour vérifier si un utilisateur donné par son ID est un administrateur
+    /// <summary>
+    /// Vérifie si un utilisateur donné par son ID possède le rôle administrateur.
+    /// </summary>
+    /// <param name="id">Identifiant de l'utilisateur.</param>
+    /// <returns>True si l'utilisateur est admin, sinon false.</returns>
     public async Task<bool> CheckForUserRoleByIdAsync(Guid id)
     {
         try
@@ -77,6 +99,11 @@ public class UserRepository(ApplicationDatabaseContext dbContext, ILogger<Reposi
         }
     }
     
+    /// <summary>
+    /// Vérifie l'existence d'un utilisateur par son identifiant.
+    /// </summary>
+    /// <param name="id">Identifiant de l'utilisateur.</param>
+    /// <returns>True si l'utilisateur existe, sinon false.</returns>
     public async Task<bool> CheckForUserByIdAsync(Guid id)
     {
         try

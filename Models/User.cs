@@ -18,7 +18,7 @@ public class User
     // Index de recherche en base de données
     // Utilise un algorithme de hachage déterministe
     // AES-GCM n'étant pas déterministe, il est impossible de comparer des données reçues à des données en DB
-    // Ne pose pas de risque de sécurité en cas de fuite de données, ca il est impossible de "déhacher"
+    // Ne pose pas de risque de sécurité en cas de fuite de données, ça il est impossible de "déhacher"
     public string MailUniqueHMac { get; init; }
     public string PhoneNumberUniqueHMac { get; init; }
     public int TriesBeforeLockedOut { get; set; }
@@ -30,9 +30,9 @@ public class User
     public string SecurityQuestion { get; init; }
     public string SecurityAnswer { get; init; }
     
-    //public IEnumerable<Order>? Orders { get; set; }
-    //public IEnumerable<Notification>? Notifications { get; set; }
-    //public IEnumerable<ArticleInCart>? ArticlesInCart { get; set; }
+    public IEnumerable<Order>? Orders { get; set; }
+    public IEnumerable<Notification>? Notifications { get; set; }
+    public IEnumerable<CartItem>? CartItems { get; set; }
     
     private User() {}
 

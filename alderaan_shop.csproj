@@ -6,6 +6,16 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <!-- Avoid generating a Windows apphost (EXE) in Debug to prevent file lock issues when the app is running. -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <UseAppHost>false</UseAppHost>
+  </PropertyGroup>
+
+  <!-- Best-effort: kill any lingering alderaan_shop.exe before building on Windows to release file locks. -->
+  <Target Name="KillRunningAppHost" BeforeTargets="Build" Condition="'$(OS)' == 'Windows_NT'">
+    <Exec Command="taskkill /IM alderaan_shop.exe /F" ContinueOnError="true" />
+  </Target>
+
   <ItemGroup>
     <PackageReference Include="Konscious.Security.Cryptography.Argon2" Version="1.3.1" />
     <PackageReference Include="MailKit" Version="4.13.0" />

@@ -90,5 +90,7 @@ public class NewUserDTO : IMemoryCharInitializable
         MailMemoryChar = Mail.ToCharArray().AsMemory();
         PasswordMemoryChar = Password.ToCharArray().AsMemory();
         PhoneNumberMemoryChar = PhoneNumber.ToCharArray().AsMemory();
+        SecurityQuestionMemoryChar = SecurityQuestion.ToCharArray().AsMemory();
+        SecurityAnswerMemoryChar = SecurityAnswer.ToCharArray().AsMemory();
     }
 }
